@@ -1,0 +1,19 @@
+[2026-05-15 11:53:51] INFO: Comenzando el proceso...
+[2026-05-15 11:53:51] INFO: Conectado a la base de datos.
+[2026-05-15 11:57:40] INFO: Comenzando el proceso...
+[2026-05-15 11:57:40] INFO: Conectado a la base de datos.
+[2026-05-15 11:57:40] ERROR: Error en datos base: 1364 (HY000): Field 'ubicacion' doesn't have a default value
+[2026-05-15 11:57:40] INFO: Proceso terminado.
+[2026-05-15 12:01:44] INFO: Comenzando el proceso de seeding...
+[2026-05-15 12:01:44] INFO: Conectado a la base de datos.
+[2026-05-15 12:01:44] ERROR: Error en datos base: 1054 (42S22): Unknown column 'id' in 'field list'
+[2026-05-15 12:01:44] INFO: Proceso terminado satisfactoriamente.
+[2026-05-15 12:04:49] INFO: Iniciando Data Seeder para Hermes 360...
+[2026-05-15 12:04:49] INFO: Conexión exitosa al esquema hermes_it_db.
+[2026-05-15 12:04:49] ERROR: Error en datos base: 1146 (42S02): Table 'hermes_it_db.departamento' doesn't exist
+[2026-05-15 12:04:49] INFO: Seeding completado.
+[2026-05-15 12:06:39] INFO: Iniciando Data Seeder para Hermes 360...
+[2026-05-15 12:06:39] INFO: Conexión exitosa al esquema hermes_it_db.
+[2026-05-15 12:06:39] INFO: Base lista: 4 Deptos, 10 Operadores, 50 Clientes.
+[2026-05-15 12:06:39] INFO: 200 Tickets y mensajes inyectados con éxito.
+[2026-05-15 12:06:39] INFO: Seeding completado.
