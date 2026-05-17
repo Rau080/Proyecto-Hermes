@@ -4,23 +4,36 @@ from faker import Faker
 import random
 import logging
 from datetime import datetime, timedelta
+<<<<<<< HEAD
 # Creamos el archivo llamado seed_log.txt donde se guardar los registros que hace el script. Tambien nos sirve saber si falla algo en la base de datos
+=======
+
+>>>>>>> aae3b3f1ccda5c88b3bef7fcc96780c7596b8141
 logging.basicConfig(
     filename='seed_log.txt',
     level=logging.INFO,
     format='[%(asctime)s] %(levelname)s: %(message)s',
     datefmt='%Y-%m-%d %H:%M:%S'
 )
+<<<<<<< HEAD
 # Iniciamos Faker para generar nombres, correos y textos falsos pero realistas
 fake = Faker()
 # funcion para que actue de controlador de notificaciones, para que cuando el programa se conecte a la base de datos o de error al realizar algo, esta funcion la muestra en pantalla y a la vez la clasifica y lo manda al archivo see_log.txt
+=======
+fake = Faker()
+
+>>>>>>> aae3b3f1ccda5c88b3bef7fcc96780c7596b8141
 def escribir_log(mensaje, nivel="info"):
     if nivel == "info":
         logging.info(mensaje)
     else:
         logging.error(mensaje)
     print(mensaje)
+<<<<<<< HEAD
 # Conexión a la base de datos 
+=======
+    
+>>>>>>> aae3b3f1ccda5c88b3bef7fcc96780c7596b8141
 def conectar_bd():
     try:
         conexion = mysql.connector.connect(
@@ -30,17 +43,27 @@ def conectar_bd():
             database='hermes_it_db'
         )
         if conexion.is_connected():
+<<<<<<< HEAD
             escribir_log("Conexión exitosa al esquema hermes_it_db.")
+=======
+            escribir_log("Conectado a la base de datos.")
+>>>>>>> aae3b3f1ccda5c88b3bef7fcc96780c7596b8141
             return conexion
     except Error as e:
         escribir_log(f"Error al conectar: {e}", "error")
         return None
+<<<<<<< HEAD
 def generar_datos_base(conexion):
 #Activa el cursor, que nos permite enviar y ejecutar comandos SQL en la base de datos y crea 2 listas vacías ids_operadores y ids_clientes
+=======
+    
+def generar_datos_base(conexion):
+>>>>>>> aae3b3f1ccda5c88b3bef7fcc96780c7596b8141
     cursor = conexion.cursor()
     ids_operadores = []
     ids_clientes = []
     try:
+<<<<<<< HEAD
 # Con una lista creada dept_data donde esta nombre del departamento y ubicacion. Con el bucle for, recorre la lista y la inserta en la tabla departamento
         depts_data = [
             ('Soporte nivel 1', 'Planta Baja'), ('Administracion', 'Oficina A'),
@@ -132,3 +155,70 @@ def ejecutar():
 # Con esto nos aseguramos que el script solo empieza a ejecutarse si se abre este archivo directamente
 if __name__ == "__main__":
     ejecutar()
+=======
+        departamentos = [
+            ('Soporte nivel 1', 'Planta Baja'), 
+            ('Administracion', 'Oficina A'), 
+            ('Soporte nivel 2', 'Planta 1'), 
+            ('Soporte nivel 3', 'Planta 2')
+        ]
+        for nombre, ubicacion in departamentos:
+            cursor.execute("INSERT INTO departamentos (nombre, ubicacion) VALUES (%s, %s)", 
+                           (nombre, ubicacion))
+        departamentos = ['IT Support', 'Network', 'Security', 'DevOps']
+        for nombre in departamentos:
+            cursor.execute("INSERT INTO departamentos (nombre) VALUES (%s)", (nombre,))
+        cursor.execute("SELECT id FROM departamentos")
+        lista_depts = [fila[0] for fila in cursor.fetchall()]
+        for _ in range(10):
+            cursor.execute("INSERT INTO operadores (nombre, id_depto) VALUES (%s, %s)", 
+                           (fake.name(), random.choice(lista_depts)))
+            ids_operadores.append(cursor.lastrowid)
+        for _ in range(50):
+            cursor.execute("INSERT INTO clientes (nombre, email) VALUES (%s, %s)", 
+                           (fake.company(), fake.unique.email()))
+            ids_clientes.append(cursor.lastrowid)
+        conexion.commit()
+        escribir_log("Departamentos, Operadores y Clientes creados.")
+        return ids_operadores, ids_clientes
+    except Error as e:
+        escribir_log(f"Error en datos base: {e}", "error")
+        return [], []
+    
+def generar_tickets_e_historial(conexion, ids_ops, ids_clis):
+    cursor = conexion.cursor()
+    try:
+        for _ in range(200):
+            fecha_inicio = fake.date_time_between(start_date='-2y', end_date='now')
+            estado_tkt = random.choice(['Open', 'In Progress', 'Closed'])
+            fecha_fin = None
+            if estado_tkt == 'Closed':
+                fecha_fin = fecha_inicio + timedelta(days=random.randint(1, 5))
+            cursor.execute("""INSERT INTO tickets 
+                (id_cliente, id_operador, asunto, estado, prioridad, fecha_creacion, fecha_cierre) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                (random.choice(ids_clis), random.choice(ids_ops), fake.sentence(nb_words=3), 
+                 estado_tkt, random.choice(['Low', 'Medium', 'High']), fecha_inicio, fecha_fin))
+            nuevo_ticket_id = cursor.lastrowid
+            for _ in range(random.randint(1, 3)):
+                fecha_msj = fecha_inicio + timedelta(hours=random.randint(1, 10))
+                cursor.execute("INSERT INTO historial (id_ticket, emisor, mensaje, fecha) VALUES (%s, %s, %s, %s)",
+                               (nuevo_ticket_id, random.choice(['Client', 'Staff']), fake.text(max_nb_chars=100), fecha_msj))
+        conexion.commit()
+        escribir_log("200 Tickets y sus mensajes creados.")
+    except Error as e:
+        escribir_log(f"Error en tickets: {e}", "error")
+
+def ejecutar_todo():
+    escribir_log("Comenzando el proceso...")
+    conn = conectar_bd()
+    if conn:
+        lista_ops, lista_clis = generar_datos_base(conn)
+        if lista_ops and lista_clis:
+            generar_tickets_e_historial(conn, lista_ops, lista_clis)
+        conn.close()
+        escribir_log("Proceso terminado.")
+
+if __name__ == "__main__":
+    ejecutar_todo()
+>>>>>>> aae3b3f1ccda5c88b3bef7fcc96780c7596b8141
