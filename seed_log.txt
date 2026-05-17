@@ -17,3 +17,8 @@
 [2026-05-15 12:06:39] INFO: Base lista: 4 Deptos, 10 Operadores, 50 Clientes.
 [2026-05-15 12:06:39] INFO: 200 Tickets y mensajes inyectados con éxito.
 [2026-05-15 12:06:39] INFO: Seeding completado.
+[2026-05-17 12:31:36] INFO: Iniciando para Hermes 360...
+[2026-05-17 12:31:36] INFO: Conexión exitosa al esquema hermes_it_db.
+[2026-05-17 12:31:36] INFO: Base lista: 8 Deptos, 10 Operadores, 50 Clientes.
+[2026-05-17 12:31:36] INFO: 200 Tickets y mensajes inyectados con éxito.
+[2026-05-17 12:31:36] INFO: Datos completados.
