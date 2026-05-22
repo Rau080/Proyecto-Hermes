@@ -77,13 +77,4 @@ BEGIN
     END IF;
 END$$
 
--- evento tareas programada 
-
-create event TareaProgramada
-on SCHEDULE EVERY 1 DAY
-STARTS '2026-05-22 03:00:00'
-do
-	update ticket
-    set estado = 'Archivado'
-    WHERE estado = 'Cerrado' and fecha_cierre <= DATE_SUB(CURDATE(), INTERVAL 3 YEAR)
     
