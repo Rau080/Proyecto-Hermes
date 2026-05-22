@@ -1,0 +1,78 @@
+USE hermes_it_db;
+CREATE TABLE auditoria_tickets (
+	id_cambio INT AUTO_INCREMENT,
+	id_ticket INT UNSIGNED NOT NULL,
+    estado_antiguo ENUM('Abierto', 'En Proceso', 'Cerrado', 'Archivado') NOT NULL,
+    estado_nuevo ENUM('Abierto', 'En Proceso', 'Cerrado', 'Archivado') NOT NULL,
+    fecha_hora DATETIME NOT NULL,
+    PRIMARY KEY (id_cambio),
+    
+    CONSTRAINT fk_ticket_auditoria
+    FOREIGN KEY (id_ticket)
+    REFERENCES hermes_it_db.ticket (codigo_ticket)
+)
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+create event TareaProgramada
+on SCHEDULE EVERY 1 DAY
+STARTS '2026-05-22 03:00:00'
+do
+	update ticket
+    set estado = 'Archivado'
+    WHERE estado = 'Cerrado' and fecha_cierre <= DATE_SUB(CURDATE(), INTERVAL 3 YEAR);
+    
+-- Creación del PROCEDURE InsertarTicketManual(...) con sus correspondientes parámetros IN y la lógica condicional (IF ... ELSE ... END IF).
+DELIMITER //
+CREATE PROCEDURE InsertarTicketManual(
+	IN p_correo VARCHAR(150),
+    IN p_nombre VARCHAR(150),
+    IN p_telefono VARCHAR(20),
+    IN p_titulo VARCHAR(200),
+    IN p_descripcion TEXT,
+    IN p_id_operador INT UNSIGNED
+)
+begin
+	-- IF: Si el correo no existe, insertamos al cliente nuevo
+    IF (SELECT COUNT(*) FROM cliente WHERE correo_electronico = p_correo) = 0 THEN
+        INSERT INTO cliente (nombre_completo, correo_electronico, telefono)
+        VALUES (p_nombre, p_correo, p_telefono);
+    END IF;
+    -- Creamos el ticket buscando el ID del cliente directamente por su correo
+    INSERT INTO ticket (titulo, descripcion, fecha_creacion, categoria, prioridad, estado, id_cliente, id_operador)
+    VALUES (
+        p_titulo, 
+        p_descripcion, 
+        NOW(), 
+        'Soporte', 
+        'Media', 
+        'Abierto', 
+        (SELECT id_cliente FROM cliente WHERE correo_electronico = p_correo LIMIT 1), p_id_operador
+    );
+END //
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER validacionMensajeTicket
+	BEFORE INSERT ON ticket
+    FOR EACH ROW
+BEGIN
+	IF NEW.descripcion = '' THEN
+		SIGNAL SQLSTATE '45000' 
+        SET MESSAGE_TEXT = 'Error... La descripción del mensaje NO debe estar vacía';
+    END IF;
+END$$
+
+DROP TRIGGER cambioEstadoTicket;
+DELIMITER $$
+CREATE TRIGGER cambioEstadoTicket
+	AFTER UPDATE ON ticket
+    FOR EACH ROW
+BEGIN
+	IF (NEW.estado != OLD.estado) THEN
+		INSERT INTO auditoria_ticket(codigo_ticket, estado_anterior, estado_actual, fecha_cambio)
+        VALUES(OLD.codigo_ticket, OLD.estado, NEW.estado, NOW());
+    END IF;
+END$$
