@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+from getpass import getpass
 from faker import Faker
 import random
 import logging
@@ -45,7 +46,7 @@ def conectar_bd():
         conexion = mysql.connector.connect(
             host='localhost',
             user='root',
-            password='Onmula01',
+            password=getpass('Introduce tu contraseña: '),
             database='hermes_it_db'
         )
         if conexion.is_connected():
